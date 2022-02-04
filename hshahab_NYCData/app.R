@@ -8,30 +8,33 @@
 #
 
 library(shiny)
+library(plyr)
 arrdata <- read.csv(file = '/Users/hajrashahab/Documents/GitHub/hw1-hshahab/hshahab_NYCData/NYPD_Arrest_Data__Year_to_Date_.csv')
 # Define UI for application that draws a histogram
 ui <- fluidPage(
 
     # Application title
-    titlePanel("NYC Arrest Data"),
+    titlePanel("New York City Arrest Data"),
 
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
             # Select variable for y-axis ----------------------------------
+            img(src = "Crime-2.jpeg", height = 140, width = 250),
+            
             selectInput(inputId = "y", label = "Y-axis:", 
-                        choices = c("jurisdiction_code"), selected = "arrest_key"),
+                        choices = c("ARREST_KEY" = "ARREST_KEY"), selected = "ARREST_KEY"),
            
             # Select variable for x-axis ----------------------------------
             selectInput(inputId = "x", label = "X-axis:", 
-                         choices = c("jurisdiction_code"), selected = "arrest_key"),
+                         choices = c("AGE_GROUP")),
             
             # Select variable for color -----------------------------------
-            selectInput(inputId = "z", 
-                        label = "Color by:",
-                        choices = c("jurisdiction_code"),
-                        selected = "arrest_key"),
-            # Set alpha level ---------------------------------------------
+          selectInput(inputId = "z", 
+                   label = "Color by:",
+                    choices = c("jurisdiction_code"),
+                       selected = "arrest_key"),
+            #Set alpha level ---------------------------------------------
             sliderInput(inputId = "alpha", 
                         label = "Alpha:", 
                         min = 0, max = 1, 
@@ -50,23 +53,26 @@ ui <- fluidPage(
             plotOutput(outputId = "scatterplot"),
             
             # Show data table ---------------------------------------------
-            DT::dataTableOutput(outputId = "arrtable")
+            DT::dataTableOutput(outputId = "arrtable"),
+            
+            #Adding a Download Button
+            downloadButton("downloadData", "Download")
         )
     )
 )
+
+
 
 # Define server function required to create the scatterplot ---------
 server <- function(input, output) {
     
     # Create scatterplot object the plotOutput function is expecting --
     output$scatterplot <- renderPlot({
-        ggplot(data = arrdata, aes_string(x = input$x, y = input$y,
-                                         color = input$z)) +
+        ggplot(data = arrdata, aes_string(x = input$x, y = input$y)) +
             geom_point(alpha = input$alpha) +
             labs(x = toTitleCase(str_replace_all(input$x, "_", " ")),
-                 y = toTitleCase(str_replace_all(input$y, "_", " ")),
-                 color = toTitleCase(str_replace_all(input$z, "_", " ")))
-    })
+                 y = toTitleCase(str_replace_all(input$y, "_", " ")))
+        })
     
     # Print data table if checked -------------------------------------
     output$arrtable <- DT::renderDataTable(
