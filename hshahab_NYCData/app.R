@@ -16,6 +16,7 @@ library(DT)
 library(stringr)
 library(tools)
 library(dplyr)
+install.packages('rsconnect')
 
 arrdata <- read.csv(file = 'NYPD_Arrest_Data__Year_to_Date_.csv')
 b64 <- base64enc::dataURI(file="Crime-2.jpeg", mime="Crime-2.jpeg")
